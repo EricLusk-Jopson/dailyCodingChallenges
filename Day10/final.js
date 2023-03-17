@@ -4,36 +4,18 @@
  * @return {boolean}
  */
 var isMatch = function (s, p) {
-  // doesn't work so far
-  if (p[0] === "*") return false;
-  let i = 0;
-  let j = 0;
-  let char = p[j];
+  // return if there is no pattern to match
+  if (!p || !p.length) return !s.length;
 
-  while (i < s.length && j < p.length) {
-    console.log(i, j);
-    console.log(s[i], p[j]);
-    if (s[i] !== p[j] && p[j] !== "." && p[j + 1] !== "*") return false;
+  // confirm if the first character matches
+  const match = s.length && (s[0] === p[0] || p[0] === ".");
 
-    if (p[j + 1] === "*") {
-      console.log("j+1 is '*'");
-      if (s[i + 1] !== s[i] && p[j] !== ".") {
-        console.log("i+1 is different AND p[j] isn't '.'");
-        console.log(s[i], s[i + 1]);
-        j += 2;
-      }
-    } else j++;
-    i++;
+  if (p.length > 1 && p[1] === "*") {
+    // if there is a match, check the pattern against the next iteration of the string
+    // also check the string against the pattern coming after the *
+    return (match && isMatch(s.substring(1), p)) || isMatch(s, p.substring(2));
+  } else {
+    // if no * check match on next string and pattern chars
+    return match && isMatch(s.substring(1), p.substring(1));
   }
-
-  if (i < s.length) return false;
-  if (p[j + 1] === "*" && p[p.length - 1] !== "*") return false;
-  if (p[j + 1] !== "*" && j < p.length) return false;
-  return true;
-
-  // const regex = new RegExp(p, "g");
-  // const result = s.match(regex);
-  // console.log(result);
-  // if(!result) {return false}
-  // return result && result[0] === s;
 };
